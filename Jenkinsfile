@@ -31,10 +31,10 @@ pipeline {
 
         stage('Post-Deployment Check') {
             steps {
-                echo 'Verifying deployed application...'
+                echo 'Verifying deployed application on EKS cluster...'
                 sshagent(['ansible_ssh']) {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no ec2-user@54.91.24.159 "
+                        ssh -o StrictHostKeyChecking=no ec2-user@54.152.145.23 "
                         kubectl get svc
                         "
                     '''
@@ -43,3 +43,4 @@ pipeline {
         }
     }
 }
+
