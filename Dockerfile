@@ -1,11 +1,7 @@
-FROM tomcat:9.0
+FROM tomcat:9.0-jdk17
 
-# Copy the pre-built WAR file into Tomcat
-COPY ./target/*.war /usr/local/tomcat/webapps/myapp.war
+# Copy the WAR produced by Maven
+COPY ./target/java-web-app.war /usr/local/tomcat/webapps/myapp.war
 
-# Expose Tomcat default port
 EXPOSE 8080
-
-# Start Tomcat automatically when container runs
 CMD ["catalina.sh", "run"]
-
