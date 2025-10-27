@@ -1,7 +1,9 @@
 pipeline {
   agent {
-    // 👇 This ensures Jenkins always uses a fixed workspace (no @2/@tmp issues)
-    customWorkspace '/var/lib/jenkins/workspace/Pipeline'
+    any {
+      // 👇 This ensures Jenkins always uses a fixed workspace (no @2/@tmp issues)
+      customWorkspace '/var/lib/jenkins/workspace/Pipeline'
+    }
   }
 
   environment {
@@ -121,4 +123,3 @@ pipeline {
     }
   }
 }
-
