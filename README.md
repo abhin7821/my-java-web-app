@@ -37,7 +37,7 @@ AWS LoadBalancer	                       Exposes the application publicly
 
 ### 1️⃣ Developer Stage
 
-Developer commits and pushes code to the main branch in GitHub.
+Developer commits and pushes code to the main branch in GitHub
 
 A GitHub webhook triggers Jenkins automatically on every commit.
 
