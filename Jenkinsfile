@@ -3,9 +3,9 @@ pipeline {
 
   environment {
     DOCKERHUB_REPO = 'aa309m/myapp'
-    DOCKER_CREDS   = 'dockerhub_creds'   // Jenkins Username/Password cred for Docker Hub
+    DOCKER_CREDS   = 'dockerhub_new'   // Jenkins Username/Password cred for Docker Hub
     SSH_CREDS      = 'ansible_ssh'       // Jenkins SSH cred for ec2-user on K8s/Ansible host
-    K8S_HOST       = '54.152.145.23'     // <-- put your K8s/Ansible host here (has kubectl + ansible)
+    K8S_HOST       = '13.220.117.130'     // <-- put your K8s/Ansible host here (has kubectl + ansible)
   }
 
   stages {
