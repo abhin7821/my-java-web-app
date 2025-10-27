@@ -1,0 +1,13 @@
+
+---
+- name: Build and push Docker image to DockerHub
+  hosts: dockerhosts
+  become: false  # 👈 disables sudo, runs as ec2-user
+  tasks:
+    - name: Build Docker image
+      command: docker build -t aa309m/myapp:latest /home/ec2-user/my-java-web-app-build
+
+    - name: Push Docker image to DockerHub
+      command: docker push aa309m/myapp:latest
+
+
