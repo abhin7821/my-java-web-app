@@ -1,4 +1,3 @@
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -15,7 +14,8 @@ spec:
     spec:
       containers:
       - name: myapp
-        image: aa309m/myapp:latest   # pulled from DockerHub
+        # Jenkins will replace BUILD_TAG with the current build number before apply
+        image: aa309m/myapp:BUILD_TAG
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
-
