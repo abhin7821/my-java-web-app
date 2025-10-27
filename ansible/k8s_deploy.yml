@@ -1,4 +1,3 @@
-
 ---
 - name: Deploy myapp to Kubernetes cluster
   hosts: eks
