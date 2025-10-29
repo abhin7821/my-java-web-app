@@ -18,7 +18,7 @@ Developer → GitHub → Jenkins → Ansible → Docker → Docker Hub → Kuber
 
 ## Tools and Technologies Used
 
-| Tool / Service | Purpose |
+|Tool / Service  |Purpose |
 |----------------|----------|
 | **GitHub** | Source Code Management (SCM) and webhook trigger |
 | **Jenkins** | CI/CD orchestration and pipeline automation |
