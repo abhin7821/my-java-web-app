@@ -1,23 +1,20 @@
 pipeline {
   agent {
-    any {
-      // 👇 This ensures Jenkins always uses a fixed workspace (no @2/@tmp issues)
+    node {
+      label ''
       customWorkspace '/var/lib/jenkins/workspace/Pipeline'
     }
   }
 
   environment {
-    // 🔧 Docker & Ansible configuration
     DOCKERHUB_REPO = 'aa309m/myapp'
-    DOCKER_CREDS   = 'dockerhub_new'   // Jenkins credentials ID for DockerHub (username/password)
-    SSH_CREDS      = 'ansible_ssh'     // Jenkins SSH credentials ID for ec2-user on Ansible/K8s host
-    K8S_HOST       = '13.220.117.130'  // EC2 host having Ansible + kubectl configured
+    DOCKER_CREDS   = 'dockerhub_new'   // Jenkins credentials ID for DockerHub
+    SSH_CREDS      = 'ansible_ssh'     // Jenkins SSH key for ec2-user on K8s/Ansible host
+    K8S_HOST       = '13.220.117.130'  // K8s/Ansible EC2 instance (has kubectl + ansible)
   }
 
   options {
-    // Safety: stop old builds if a new one starts
     disableConcurrentBuilds()
-    // Keep only 10 last builds to save space
     buildDiscarder(logRotator(numToKeepStr: '10'))
   }
 
@@ -25,14 +22,14 @@ pipeline {
 
     stage('Checkout') {
       steps {
-        echo "📦 Checking out source code from GitHub..."
+        echo "📦 Checking out code from GitHub..."
         checkout scm
       }
     }
 
     stage('Maven Build') {
       steps {
-        echo "🔨 Building Java WAR package using Maven..."
+        echo "🔨 Building Java WAR package..."
         sh 'mvn -B clean package'
       }
     }
@@ -52,11 +49,11 @@ pipeline {
             echo "Building Docker image..."
             docker build -t ${DOCKERHUB_REPO}:${BUILD_NUMBER} -t ${DOCKERHUB_REPO}:latest .
 
-            echo "Pushing Docker image to DockerHub..."
+            echo "Pushing Docker image..."
             docker push ${DOCKERHUB_REPO}:${BUILD_NUMBER}
             docker push ${DOCKERHUB_REPO}:latest
 
-            echo "✅ Docker image build & push successful!"
+            echo "✅ Docker build and push completed successfully!"
           '''
         }
       }
@@ -64,7 +61,7 @@ pipeline {
 
     stage('Prepare Manifests on K8s Host') {
       steps {
-        echo "🧩 Preparing Kubernetes manifests on K8s host..."
+        echo "🧩 Preparing Kubernetes manifests..."
         sshagent(credentials: [env.SSH_CREDS]) {
           sh '''
             echo "Copying manifests to remote host..."
@@ -81,21 +78,21 @@ pipeline {
 
     stage('Deploy to Kubernetes via Ansible') {
       steps {
-        echo "🚀 Deploying application to Kubernetes via Ansible..."
+        echo "🚀 Deploying application to Kubernetes..."
         sshagent(credentials: [env.SSH_CREDS]) {
           sh '''
-            echo "Ensuring Ansible inventory exists..."
+            echo "Ensuring inventory file exists..."
             ssh -o StrictHostKeyChecking=no ec2-user@${K8S_HOST} \
               'test -f ~/hosts.ini || echo -e "[eks]\\nlocalhost ansible_connection=local" > ~/hosts.ini'
 
-            echo "Copying playbook to remote host..."
+            echo "Copying playbook..."
             scp -o StrictHostKeyChecking=no ansible/k8s_deploy.yml ec2-user@${K8S_HOST}:/home/ec2-user/k8s_deploy.yml
 
             echo "Running Ansible playbook..."
             ssh -o StrictHostKeyChecking=no ec2-user@${K8S_HOST} \
               'ansible-playbook ~/k8s_deploy.yml -i ~/hosts.ini'
 
-            echo "✅ Ansible deployment completed."
+            echo "✅ Ansible deployment completed successfully!"
           '''
         }
       }
@@ -103,7 +100,7 @@ pipeline {
 
     stage('Post-Deployment Check') {
       steps {
-        echo "🔍 Validating deployed Kubernetes resources..."
+        echo "🔍 Verifying deployed pods and services..."
         sshagent(credentials: [env.SSH_CREDS]) {
           sh '''
             ssh -o StrictHostKeyChecking=no ec2-user@${K8S_HOST} \
@@ -116,10 +113,10 @@ pipeline {
 
   post {
     success {
-      echo "✅ Pipeline completed successfully! Application deployed."
+      echo "✅ Pipeline completed successfully and deployed to Kubernetes!"
     }
     failure {
-      echo "❌ Pipeline failed. Please check logs above for the failed stage."
+      echo "❌ Pipeline failed. Please review the stage logs."
     }
   }
 }
