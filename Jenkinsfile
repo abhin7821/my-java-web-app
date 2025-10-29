@@ -9,7 +9,7 @@ pipeline {
     DOCKERHUB_REPO = 'aa309m/myapp'
     DOCKER_CREDS   = 'dockerhub_new'
     SSH_CREDS      = 'ansible_ssh'
-    K8S_HOST       = '54.226.163.178'
+    K8S_HOST       = '3.93.67.133'
   }
 
   options {
