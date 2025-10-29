@@ -1,16 +1,15 @@
 pipeline {
   agent {
-    node {
-      label ''
+    any {
       customWorkspace '/var/lib/jenkins/workspace/Pipeline'
     }
   }
 
   environment {
     DOCKERHUB_REPO = 'aa309m/myapp'
-    DOCKER_CREDS   = 'dockerhub_new'   // Jenkins credentials ID for DockerHub
-    SSH_CREDS      = 'ansible_ssh'     // Jenkins SSH key for ec2-user on K8s/Ansible host
-    K8S_HOST       = '13.220.117.130'  // K8s/Ansible EC2 instance (has kubectl + ansible)
+    DOCKER_CREDS   = 'dockerhub_new'
+    SSH_CREDS      = 'ansible_ssh'
+    K8S_HOST       = '54.226.163.178'
   }
 
   options {
@@ -22,14 +21,14 @@ pipeline {
 
     stage('Checkout') {
       steps {
-        echo "📦 Checking out code from GitHub..."
+        echo "📦 Checking out source code from GitHub..."
         checkout scm
       }
     }
 
     stage('Maven Build') {
       steps {
-        echo "🔨 Building Java WAR package..."
+        echo "🔨 Building Java WAR package using Maven..."
         sh 'mvn -B clean package'
       }
     }
@@ -49,11 +48,11 @@ pipeline {
             echo "Building Docker image..."
             docker build -t ${DOCKERHUB_REPO}:${BUILD_NUMBER} -t ${DOCKERHUB_REPO}:latest .
 
-            echo "Pushing Docker image..."
+            echo "Pushing Docker image to DockerHub..."
             docker push ${DOCKERHUB_REPO}:${BUILD_NUMBER}
             docker push ${DOCKERHUB_REPO}:latest
 
-            echo "✅ Docker build and push completed successfully!"
+            echo "✅ Docker image build & push successful!"
           '''
         }
       }
@@ -61,7 +60,7 @@ pipeline {
 
     stage('Prepare Manifests on K8s Host') {
       steps {
-        echo "🧩 Preparing Kubernetes manifests..."
+        echo "🧩 Preparing Kubernetes manifests on K8s host..."
         sshagent(credentials: [env.SSH_CREDS]) {
           sh '''
             echo "Copying manifests to remote host..."
@@ -78,21 +77,21 @@ pipeline {
 
     stage('Deploy to Kubernetes via Ansible') {
       steps {
-        echo "🚀 Deploying application to Kubernetes..."
+        echo "🚀 Deploying application to Kubernetes via Ansible..."
         sshagent(credentials: [env.SSH_CREDS]) {
           sh '''
-            echo "Ensuring inventory file exists..."
+            echo "Ensuring Ansible inventory exists..."
             ssh -o StrictHostKeyChecking=no ec2-user@${K8S_HOST} \
               'test -f ~/hosts.ini || echo -e "[eks]\\nlocalhost ansible_connection=local" > ~/hosts.ini'
 
-            echo "Copying playbook..."
+            echo "Copying playbook to remote host..."
             scp -o StrictHostKeyChecking=no ansible/k8s_deploy.yml ec2-user@${K8S_HOST}:/home/ec2-user/k8s_deploy.yml
 
             echo "Running Ansible playbook..."
             ssh -o StrictHostKeyChecking=no ec2-user@${K8S_HOST} \
               'ansible-playbook ~/k8s_deploy.yml -i ~/hosts.ini'
 
-            echo "✅ Ansible deployment completed successfully!"
+            echo "✅ Ansible deployment completed."
           '''
         }
       }
@@ -100,7 +99,7 @@ pipeline {
 
     stage('Post-Deployment Check') {
       steps {
-        echo "🔍 Verifying deployed pods and services..."
+        echo "🔍 Validating deployed Kubernetes resources..."
         sshagent(credentials: [env.SSH_CREDS]) {
           sh '''
             ssh -o StrictHostKeyChecking=no ec2-user@${K8S_HOST} \
@@ -113,10 +112,11 @@ pipeline {
 
   post {
     success {
-      echo "✅ Pipeline completed successfully and deployed to Kubernetes!"
+      echo "✅ Pipeline completed successfully! Application deployed."
     }
     failure {
-      echo "❌ Pipeline failed. Please review the stage logs."
+      echo "❌ Pipeline failed. Please check logs above for the failed stage."
     }
   }
 }
+
