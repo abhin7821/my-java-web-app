@@ -100,7 +100,7 @@ my-java-web-app/
 └── README.md
 ```
 ## Key Jenkinsfile Stages
-
+```text
 pipeline {
     agent any
     stages {
@@ -145,7 +145,7 @@ pipeline {
         }
     }
 }
-
+```
 ## Common Commands Used
 
 Purpose	                       Command
