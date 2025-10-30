@@ -152,19 +152,19 @@ Purpose	                       Command
 
 Build WAR file	               mvn clean package -DskipTests
 
-Build Docker image	       docker build -t aa309m/myapp:latest
+Build Docker image	           docker build -t aa309m/myapp:latest
 
-Push to Docker Hub	       docker push aa309m/myapp:latest
+Push to Docker Hub	           docker push aa309m/myapp:latest
 
-Get pods	               kubectl get pods -o wide
+Get pods	                     kubectl get pods -o wide
 
-Get services	               kubectl get svc
+Get services	                 kubectl get svc
 
-Scale pods	               kubectl scale deployment myapp-deployment --replicas=2
+Scale pods	                   kubectl scale deployment myapp-deployment --replicas=2
 
-Restart deployment	       kubectl rollout restart deployment myapp-deployment
+Restart deployment	           kubectl rollout restart deployment myapp-deployment
 
-Test endpoint	               curl http://<load-balancer-dns>/myapp/HelloServlet
+Test endpoint	                 curl http://<load-balancer-dns>/myapp/HelloServlet
 
 ## Sample Output
 
@@ -178,13 +178,13 @@ Hello from HelloServlet!
 {"id": "1111", "name": "Up1"}
 
 ## Key Learnings
-
+```text
 ✅ Built and automated a multi-server CI/CD pipeline from scratch
 ✅ Configured GitHub Webhook → Jenkins Trigger for automatic builds
 ✅ Implemented Ansible automation for Docker & Kubernetes deployment
 ✅ Debugged real-world issues (EC2 IP changes, credential fixes, etc.)
 ✅ Connected Jenkins → Ansible → EKS for full infrastructure delivery
-
+```
 ## Result
 
 Fully automated CI/CD pipeline
