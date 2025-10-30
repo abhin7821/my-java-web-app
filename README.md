@@ -78,7 +78,7 @@ Hello from HelloServlet!
 {"id": "1111", "name": "Up1"}
 
 ## Folder Structure
-
+```text
 my-java-web-app/
 │
 ├── Dockerfile
@@ -98,7 +98,7 @@ my-java-web-app/
 │   └── service.yaml
 │
 └── README.md
-
+```
 ## Key Jenkinsfile Stages
 
 pipeline {
