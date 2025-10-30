@@ -146,25 +146,19 @@ pipeline {
     }
 }
 ```
-## Common Commands Used
+## 🧩 Common Commands Used
 
-Purpose	                       Command
+| **Purpose** | **Command** |
+|--------------|-------------|
+| Build WAR file | `mvn clean package -DskipTests` |
+| Build Docker image | `docker build -t aa309m/myapp:latest .` |
+| Push to Docker Hub | `docker push aa309m/myapp:latest` |
+| Get pods | `kubectl get pods -o wide` |
+| Get services | `kubectl get svc` |
+| Scale pods | `kubectl scale deployment myapp-deployment --replicas=2` |
+| Restart deployment | `kubectl rollout restart deployment myapp-deployment` |
+| Test endpoint | `curl http://<load-balancer-dns>/myapp/HelloServlet` |
 
-Build WAR file	               -mvn clean package -DskipTests
-
-Build Docker image	           -docker build -t aa309m/myapp:latest
-
-Push to Docker Hub	           -docker push aa309m/myapp:latest
-
-Get pods	                     -kubectl get pods -o wide
-
-Get services	                 -kubectl get svc
-
-Scale pods	                   -kubectl scale deployment myapp-deployment --replicas=2
-
-Restart deployment	           -kubectl rollout restart deployment myapp-deployment
-
-Test endpoint	                 -curl http://<load-balancer-dns>/myapp/HelloServlet
 
 ## Sample Output
 
